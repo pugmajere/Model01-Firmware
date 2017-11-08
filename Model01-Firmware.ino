@@ -290,6 +290,7 @@ void setup() {
     // your keyboard. Spoiler: the blue pixel never catches the red pixel
     &LEDChaseEffect,
 
+    #if 0
     // These static effects turn your keyboard's LEDs a variety of colors
     &solidRed, &solidOrange, &solidYellow, &solidGreen, &solidBlue, &solidIndigo, &solidViolet,
 
@@ -302,6 +303,7 @@ void setup() {
 
     // The stalker effect lights up the keys you've pressed recently
     &StalkerEffect,
+    #endif
 
     // The numlock plugin is responsible for lighting up the 'numpad' mode
     // with a custom LED effect
