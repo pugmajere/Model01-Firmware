@@ -72,7 +72,9 @@
   */
 
 enum { MACRO_VERSION_INFO,
-       MACRO_ANY
+       MACRO_ANY,
+       MACRO_CTRLPGUP,
+       MACRO_LOCKSCREEN
      };
 
 
@@ -135,7 +137,7 @@ const Key keymaps[][ROWS][COLS] PROGMEM = {
    Key_LeftControl, Key_Backspace, Key_LeftGui, Key_LeftShift,
    ShiftToLayer(FUNCTION),
 
-   M(MACRO_ANY),  Key_6, Key_7, Key_8,     Key_9,         Key_0,         Key_KeypadNumLock,
+   M(MACRO_LOCKSCREEN),  Key_6, Key_7, Key_8,     Key_9,         Key_0,         M(MACRO_CTRLPGUP),
    Key_Enter,     Key_Y, Key_U, Key_I,     Key_O,         Key_P,         Key_Equals,
                   Key_H, Key_J, Key_K,     Key_L,         Key_Semicolon, Key_Quote,
    Key_RightAlt,  Key_N, Key_M, Key_Comma, Key_Period,    Key_Slash,     Key_Minus,
@@ -206,7 +208,6 @@ static void anyKeyMacro(uint8_t keyState) {
     kaleidoscope::hid::pressKey(lastKey);
 }
 
-
 /** macroAction dispatches keymap events that are tied to a macro
     to that macro. It takes two uint8_t parameters.
 
@@ -229,7 +230,19 @@ const macro_t *macroAction(uint8_t macroIndex, uint8_t keyState) {
   case MACRO_ANY:
     anyKeyMacro(keyState);
     break;
+
+  case MACRO_CTRLPGUP:
+    return MACRODOWN(I(25),
+                     D(LeftControl), T(PageUp), U(LeftControl));
+
+    break;
+
+  case MACRO_LOCKSCREEN:
+    return MACRODOWN(D(LeftControl), D(LeftAlt), T(L),
+                     U(LeftControl), U(LeftAlt));
+    break;
   }
+
   return MACRO_NONE;
 }
 
