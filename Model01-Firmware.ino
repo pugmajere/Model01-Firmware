@@ -57,6 +57,8 @@
 
 #include <Kaleidoscope-SpaceCadet.h>
 
+#include "LEDFlickers.h"
+
 /** This 'enum' is a list of all the macros used by the Model 01's firmware
   * The names aren't particularly important. What is important is that each
   * is unique.
@@ -232,22 +234,6 @@ const macro_t *macroAction(uint8_t macroIndex, uint8_t keyState) {
 }
 
 
-
-// These 'solid' color effect definitions define a rainbow of
-// LED color modes calibrated to draw 500mA or less on the
-// Keyboardio Model 01.
-
-
-static kaleidoscope::LEDSolidColor solidRed(160, 0, 0);
-static kaleidoscope::LEDSolidColor solidOrange(140, 70, 0);
-static kaleidoscope::LEDSolidColor solidYellow(130, 100, 0);
-static kaleidoscope::LEDSolidColor solidGreen(0, 160, 0);
-static kaleidoscope::LEDSolidColor solidBlue(0, 70, 130);
-static kaleidoscope::LEDSolidColor solidIndigo(0, 0, 170);
-static kaleidoscope::LEDSolidColor solidViolet(130, 0, 120);
-
-
-
 /** The 'setup' function is one of the two standard Arduino sketch functions.
   * It's called when your keyboard first powers up. This is where you set up
   * Kaleidoscope and any plugins.
@@ -301,28 +287,13 @@ void setup() {
     // and slowly moves the rainbow across your keyboard
     &LEDRainbowWaveEffect,
 
+    &LEDFireFlicker,
+    &LEDColdFlicker,
+    &LEDRainbowFlicker,
+
     // The chase effect follows the adventure of a blue pixel which chases a red pixel across
     // your keyboard. Spoiler: the blue pixel never catches the red pixel
     &LEDChaseEffect,
-
-    #if 0
-    // These static effects turn your keyboard's LEDs a variety of colors
-    &solidRed, &solidOrange, &solidYellow, &solidGreen, &solidBlue, &solidIndigo, &solidViolet,
-
-    // The breathe effect slowly pulses all of the LEDs on your keyboard
-    &LEDBreatheEffect,
-
-    // The AlphaSquare effect prints each character you type, using your
-    // keyboard's LEDs as a display
-    &AlphaSquareEffect,
-
-    // The stalker effect lights up the keys you've pressed recently
-    &StalkerEffect,
-    #endif
-
-    // The numpad plugin is responsible for lighting up the 'numpad' mode
-    // with a custom LED effect
-    &NumPad,
 
     // The macros plugin adds support for macros
     &Macros,
