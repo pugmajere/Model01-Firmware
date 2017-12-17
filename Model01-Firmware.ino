@@ -254,8 +254,6 @@ void setup() {
     , {Key_RightControl, Key_RightBracket, 250}
     , SPACECADET_MAP_END
   };
-  //Set the map.
-  SpaceCadet.map = spacecadetmap;
 
   // First, call Kaleidoscope's internal setup function
   Kaleidoscope.setup();
@@ -326,6 +324,10 @@ void setup() {
   MouseKeys.accelDelay = 75;
   MouseKeys.wheelSpeed = 1;
   MouseKeys.wheelDelay = 75;
+
+  //Set the map.
+  SpaceCadet.map = spacecadetmap;
+
 }
 
 /** loop is the second of the standard Arduino sketch functions.
