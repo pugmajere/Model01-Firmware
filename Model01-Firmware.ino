@@ -32,30 +32,18 @@
 // when the keyboard is connected to a computer (or that computer is powered on)
 #include "Kaleidoscope-LEDEffect-BootGreeting.h"
 
-// Support for LED modes that set all LEDs to a single color
-#include "Kaleidoscope-LEDEffect-SolidColor.h"
 
 // Support for an LED mode that makes all the LEDs 'breathe'
 #include "Kaleidoscope-LEDEffect-Breathe.h"
 
-// Support for an LED mode that makes a red pixel chase a blue pixel across the keyboard
-#include "Kaleidoscope-LEDEffect-Chase.h"
-
 // Support for LED modes that pulse the keyboard's LED in a rainbow pattern
 #include "Kaleidoscope-LEDEffect-Rainbow.h"
-
-// Support for an LED mode that lights up the keys as you press them
-#include "Kaleidoscope-LED-Stalker.h"
-
-// Support for an LED mode that prints the keys you press in letters 4px high
-#include "Kaleidoscope-LED-AlphaSquare.h"
 
 // Support for Keyboardio's internal keyboard testing mode
 #include "Kaleidoscope-Model01-TestMode.h"
 
-#include <Kaleidoscope-DualUse.h>
-
-#include <Kaleidoscope-SpaceCadet.h>
+// The magic key features section:
+#include <Kaleidoscope-Qukeys.h>
 
 #include "LEDFlickers.h"
 
@@ -73,12 +61,9 @@
   */
 
 enum { MACRO_VERSION_INFO,
-       MACRO_ANY,
        MACRO_CTRLPGUP,
        MACRO_LOCKSCREEN
      };
-
-
 
 /** The Model 01's key layouts are defined as 'keymaps'. By default, there are three
   * keymaps: The standard QWERTY keymap, the "Function layer" keymap and the "Numpad"
@@ -129,6 +114,7 @@ enum { QWERTY, FUNCTION }; // layers
  */
 // *INDENT-OFF*
 
+// NOTE that the thumb keys are all weird and depend on qukey!
 const Key keymaps[][ROWS][COLS] PROGMEM = {
 
   [QWERTY] = KEYMAP_STACKED
@@ -136,14 +122,14 @@ const Key keymaps[][ROWS][COLS] PROGMEM = {
    Key_Backtick, Key_Q, Key_W, Key_E, Key_R, Key_T, Key_Tab,
    Key_PageUp,   Key_A, Key_S, Key_D, Key_F, Key_G,
    Key_PageDown, Key_Z, Key_X, Key_C, Key_V, Key_B, Key_Escape,
-   Key_LeftControl, Key_Backspace, Key_LeftGui, Key_LeftShift,
+   Key_LeftBracket, Key_Backspace, Key_LeftCurlyBracket, Key_LeftParen,
    ShiftToLayer(FUNCTION),
 
    M(MACRO_LOCKSCREEN),  Key_6, Key_7, Key_8,     Key_9,         Key_0,         M(MACRO_CTRLPGUP),
    Key_Enter,     Key_Y, Key_U, Key_I,     Key_O,         Key_P,         Key_Equals,
                   Key_H, Key_J, Key_K,     Key_L,         Key_Semicolon, Key_Quote,
    Key_RightAlt,  Key_N, Key_M, Key_Comma, Key_Period,    Key_Slash,     Key_Minus,
-   Key_RightShift, Key_LeftAlt, Key_Spacebar, Key_RightControl,
+   Key_RightParen, Key_RightCurlyBracket, Key_Spacebar, Key_RightBracket,
    ShiftToLayer(FUNCTION)),
 
   [FUNCTION] =  KEYMAP_STACKED
@@ -178,23 +164,6 @@ static void versionInfoMacro(uint8_t keyState) {
   }
 }
 
-/** anyKeyMacro is used to provide the functionality of the 'Any' key.
- *
- * When the 'any key' macro is toggled on, a random alphanumeric key is
- * selected. While the key is held, the function generates a synthetic
- * keypress event repeating that randomly selected key.
- *
- */
-
-static void anyKeyMacro(uint8_t keyState) {
-  static Key lastKey;
-  if (keyToggledOn(keyState))
-    lastKey.keyCode = Key_A.keyCode + (uint8_t)(millis() % 36);
-
-  if (keyIsPressed(keyState))
-    kaleidoscope::hid::pressKey(lastKey);
-}
-
 /** macroAction dispatches keymap events that are tied to a macro
     to that macro. It takes two uint8_t parameters.
 
@@ -214,14 +183,9 @@ const macro_t *macroAction(uint8_t macroIndex, uint8_t keyState) {
     versionInfoMacro(keyState);
     break;
 
-  case MACRO_ANY:
-    anyKeyMacro(keyState);
-    break;
-
   case MACRO_CTRLPGUP:
     return MACRODOWN(I(25),
                      D(LeftControl), T(PageUp), U(LeftControl));
-
     break;
 
   case MACRO_LOCKSCREEN:
@@ -240,23 +204,20 @@ const macro_t *macroAction(uint8_t macroIndex, uint8_t keyState) {
   */
 
 void setup() {
+  // coords are 0-indexed,  the "2" is the row
+  QUKEYS(kaleidoscope::Qukey(0, 2, 0, Key_LeftControl), // PageUp/ctrl
 
-  //Set the keymap with a 250ms timeout per-key
-  //Setting is {KeyThatWasPressed, AlternativeKeyToSend, TimeoutInMS}
-  //Note: must end with the SPACECADET_MAP_END delimiter
-  static kaleidoscope::SpaceCadet::KeyBinding spacecadetmap[] = {
-    {Key_LeftShift, Key_LeftParen, 250},
-    {Key_RightShift, Key_RightParen, 250},
-    {Key_LeftGui, Key_LeftCurlyBracket, 250},
-    {Key_RightAlt, Key_RightCurlyBracket, 250},
-    {Key_LeftAlt, Key_RightCurlyBracket, 250},
-    {Key_LeftControl, Key_LeftBracket, 250},
-    {Key_RightControl, Key_RightBracket, 250},
-    SPACECADET_MAP_END
-  };
+         kaleidoscope::Qukey(0, 0, 7, Key_LeftControl), // ctrl / [
+         kaleidoscope::Qukey(0, 0, 8, Key_RightControl), // ctrl / ]
 
-  //Set the map.
-  SpaceCadet.map = spacecadetmap;
+         kaleidoscope::Qukey(0, 2, 7, Key_LeftGui),     // leftgui / {
+         kaleidoscope::Qukey(0, 2, 8, Key_LeftAlt),     // leftalt / } - the only alt
+
+         kaleidoscope::Qukey(0, 3, 7, Key_LeftShift),     // leftshift / (
+         kaleidoscope::Qukey(0, 3, 8, Key_RightShift)     // rightshift / )
+  )
+  Qukeys.setTimeout(200);
+
 
   // First, call Kaleidoscope's internal setup function
   Kaleidoscope.setup();
@@ -268,8 +229,8 @@ void setup() {
     // The boot greeting effect pulses the LED button for 10 seconds after the keyboard is first connected
     &BootGreetingEffect,
 
-    // Enable dual-use keys, like making pg-up be left-ctrl.
-    //&DualUse,
+    // Enable quantum dual-use keys, like making pg-up be left-ctrl.
+    &Qukeys,
 
     // The hardware test mode, which can be invoked by tapping Prog, LED and the left Fn button at the same time.
     &TestMode,
@@ -292,28 +253,17 @@ void setup() {
     &LEDColdFlicker,
     &LEDRainbowFlicker,
 
-    // The chase effect follows the adventure of a blue pixel which chases a red pixel across
-    // your keyboard. Spoiler: the blue pixel never catches the red pixel
-    &LEDChaseEffect,
-
     // The macros plugin adds support for macros
     &Macros,
 
     // The MouseKeys plugin lets you add keys to your keymap which move the mouse.
-    &MouseKeys,
-
-    &SpaceCadet
+    &MouseKeys
   );
 
   // We set the brightness of the rainbow effects to 150 (on a scale of 0-255)
   // This draws more than 500mA, but looks much nicer than a dimmer effect
   LEDRainbowEffect.brightness(150);
   LEDRainbowWaveEffect.brightness(150);
-
-  // The LED Stalker mode has a few effects. The one we like is
-  // called 'BlazingTrail'. For details on other options,
-  // see https://github.com/keyboardio/Kaleidoscope-LED-Stalker
-  StalkerEffect.variant = STALKER(BlazingTrail);
 
   // We want to make sure that the firmware starts with LED effects off
   // This avoids over-taxing devices that don't have a lot of power to share
@@ -324,7 +274,6 @@ void setup() {
   MouseKeys.accelDelay = 75;
   MouseKeys.wheelSpeed = 1;
   MouseKeys.wheelDelay = 75;
-
 }
 
 /** loop is the second of the standard Arduino sketch functions.
