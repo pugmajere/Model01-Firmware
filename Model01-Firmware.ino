@@ -134,7 +134,7 @@ const Key keymaps[][ROWS][COLS] PROGMEM = {
   [QWERTY] = KEYMAP_STACKED
   (___,          Key_1, Key_2, Key_3, Key_4, Key_5, ___,
    Key_Backtick, Key_Q, Key_W, Key_E, Key_R, Key_T, Key_Tab,
-   CTL_T(PageUp),   Key_A, Key_S, Key_D, Key_F, Key_G,
+   Key_PageUp,   Key_A, Key_S, Key_D, Key_F, Key_G,
    Key_PageDown, Key_Z, Key_X, Key_C, Key_V, Key_B, Key_Escape,
    Key_LeftControl, Key_Backspace, Key_LeftGui, Key_LeftShift,
    ShiftToLayer(FUNCTION),
@@ -245,15 +245,18 @@ void setup() {
   //Setting is {KeyThatWasPressed, AlternativeKeyToSend, TimeoutInMS}
   //Note: must end with the SPACECADET_MAP_END delimiter
   static kaleidoscope::SpaceCadet::KeyBinding spacecadetmap[] = {
-    {Key_LeftShift, Key_LeftParen, 250}
-    , {Key_RightShift, Key_RightParen, 250}
-    , {Key_LeftGui, Key_LeftCurlyBracket, 250}
-    , {Key_RightAlt, Key_RightCurlyBracket, 250}
-    , {Key_LeftAlt, Key_RightCurlyBracket, 250}
-    , {Key_LeftControl, Key_LeftBracket, 250}
-    , {Key_RightControl, Key_RightBracket, 250}
-    , SPACECADET_MAP_END
+    {Key_LeftShift, Key_LeftParen, 250},
+    {Key_RightShift, Key_RightParen, 250},
+    {Key_LeftGui, Key_LeftCurlyBracket, 250},
+    {Key_RightAlt, Key_RightCurlyBracket, 250},
+    {Key_LeftAlt, Key_RightCurlyBracket, 250},
+    {Key_LeftControl, Key_LeftBracket, 250},
+    {Key_RightControl, Key_RightBracket, 250},
+    SPACECADET_MAP_END
   };
+
+  //Set the map.
+  SpaceCadet.map = spacecadetmap;
 
   // First, call Kaleidoscope's internal setup function
   Kaleidoscope.setup();
@@ -266,7 +269,7 @@ void setup() {
     &BootGreetingEffect,
 
     // Enable dual-use keys, like making pg-up be left-ctrl.
-    &DualUse,
+    //&DualUse,
 
     // The hardware test mode, which can be invoked by tapping Prog, LED and the left Fn button at the same time.
     &TestMode,
@@ -321,9 +324,6 @@ void setup() {
   MouseKeys.accelDelay = 75;
   MouseKeys.wheelSpeed = 1;
   MouseKeys.wheelDelay = 75;
-
-  //Set the map.
-  SpaceCadet.map = spacecadetmap;
 
 }
 
