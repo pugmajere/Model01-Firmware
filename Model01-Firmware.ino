@@ -216,7 +216,7 @@ void setup() {
          kaleidoscope::Qukey(0, 3, 7, Key_LeftShift),     // leftshift / (
          kaleidoscope::Qukey(0, 3, 8, Key_RightShift)     // rightshift / )
   )
-  Qukeys.setTimeout(200);
+  Qukeys.setTimeout(150);
 
 
   // First, call Kaleidoscope's internal setup function
