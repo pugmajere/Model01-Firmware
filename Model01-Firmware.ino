@@ -309,7 +309,7 @@ void setup() {
   // with USB devices
   LEDOff.activate();
 
-  MouseKeys.accelSpeed = 1;
+  MouseKeys.accelSpeed = 2;
   MouseKeys.accelDelay = 75;
   MouseKeys.wheelSpeed = 1;
   MouseKeys.wheelDelay = 75;
